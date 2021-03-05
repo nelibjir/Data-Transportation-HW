@@ -1,35 +1,31 @@
-﻿using System;
-using System.IO;
-using System.Xml.Linq;
-using Moravia.Dtos;
-using Moravia.Utils;
-using Newtonsoft.Json;
+﻿using log4net;
+using Moravia.Services;
 
 namespace Moravia
 {
 	public class Program
 	{
 
-		private static readonly log4net.ILog fLog = log4net.LogManager.GetLogger(typeof(Program));
+		private static readonly ILog fLog = LogManager.GetLogger(typeof(Program));
 
 		public static void Main(string[] args)
 		{
 			fLog.Info("Started to process the data...");
-			string sourceFileName = Settings.GetSourceFilePath();
-			string targetFileName = Settings.GetDestinationFilePath();
 
-			string input = FileUtil.ReadFile(sourceFileName);
-			
+			IIoService ioService;
+			ITransformationService transformationService;
+			if (Settings.IsRemote())
+				ioService = new ApiService();
+			else
+				ioService = new FileSystemService();
 
-			XDocument xdoc = XDocument.Parse(input); //should check this is really xml DEBUG
-			DocumentDto doc = new DocumentDto
-			{
-				Title = xdoc.Root.Element("title").Value, // check  when it not exists
-				Text = xdoc.Root.Element("text").Value
-			};
+			string input = ioService.ReadFromSource();
 
-			string serializedDoc = JsonConvert.SerializeObject(doc);
-			FileUtil.WriteFile(targetFileName, serializedDoc);
+			transformationService = new TransformFileService();
+			//TODO get along extension of the files
+			string output = transformationService.Transform("xml", "json", input);
+
+			ioService.SaveToDestination(output);
 			fLog.Info("Finished the processing...");
 		}
 	}

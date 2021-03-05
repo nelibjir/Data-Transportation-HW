@@ -20,6 +20,13 @@ namespace Moravia
             return fBuilder.GetSection("DestinationFile").Value;
         }
 
+        public static bool IsRemote()
+        {
+            if (fBuilder == null)
+                createBuilder();
+            return bool.Parse(fBuilder.GetSection("IsRemote").Value);
+        }
+
         private static void createBuilder()
         {
             fBuilder = new ConfigurationBuilder()
