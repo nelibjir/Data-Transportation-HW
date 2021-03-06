@@ -24,7 +24,7 @@ namespace Moravia
         {
             if (fBuilder == null)
                 createBuilder();
-            return bool.Parse(fBuilder.GetSection("IsRemote").Value);
+            return bool.Parse(fBuilder.GetSection("Remote").Value);
         }
 
         private static void createBuilder()

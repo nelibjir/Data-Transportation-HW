@@ -20,12 +20,12 @@ namespace Moravia.Utils
 			}
 			catch (FileNotFoundException ex) 
 			{
-				fLog.Error("asd", ex);
+				fLog.Error("File not found while trying to read it", ex);
 				throw;
 			}
 			catch (ArgumentException ex)
 			{
-				fLog.Error("asd", ex);
+				fLog.Error("Not valid argument, can be invalid string or null", ex);
 				throw;
 			}
 		}
@@ -42,12 +42,12 @@ namespace Moravia.Utils
 			}
 			catch (UnauthorizedAccessException ex) 
 			{
-				fLog.Error("asd", ex);
+				fLog.Error("Unauthorized access to a location on disk, write operation is not allowed", ex);
 				throw;
 			}
 			catch (ArgumentException ex)
 			{
-				fLog.Error("asd", ex);
+				fLog.Error("Not valid argument, can be invalid string or null", ex);
 				throw;
 			}
 		}
