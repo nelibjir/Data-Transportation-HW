@@ -12,6 +12,8 @@ namespace Moravia.Services
 		private static readonly string[] _SupportedFromExtensions = new string[] { "xml", "json" };
 		private static readonly string[] _SupportedToExtensions = new string[] { "xml", "json" };
 
+		private const string _RootXmlelemnt = "Document";
+
 		private static readonly ILog fLog = LogManager.GetLogger(typeof(FileSystemService));
 
 		public string Transform(string fromFormat, string toFormat, string source)
@@ -46,14 +48,27 @@ namespace Moravia.Services
 			return JsonConvert.SerializeObject(doc);
 		}
 
+		public string FromJsonToXml(string source)
+		{
+			if (String.IsNullOrEmpty(source))
+			{
+				fLog.Warn("source to transform from JSON is empty!");
+				return "";
+			}
+
+			XNode node = JsonConvert.DeserializeXNode(source, _RootXmlelemnt);
+
+			return node.ToString();
+		}
+
 		private string Process(string typeOfTransformation, string source)
 		{
 			switch (typeOfTransformation)
 			{
 				case "xmljson":
 					return FromXmlToJson(source);
-				case "jsonxml": // TODO
-					return "";
+				case "jsonxml":
+					return FromJsonToXml(source);
 				default:
 					fLog.Warn($"This tanformation is not implemented: {typeOfTransformation}");
 					return "";

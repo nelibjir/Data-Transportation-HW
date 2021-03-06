@@ -22,8 +22,7 @@ namespace Moravia
 			string input = ioService.ReadFromSource();
 
 			transformationService = new TransformFileService();
-			//TODO get along extension of the files
-			string output = transformationService.Transform("xml", "json", input);
+			string output = transformationService.Transform(ioService.GetSourceDocumentType(), ioService.GetDestinationDocumentType(), input);
 
 			ioService.SaveToDestination(output);
 			fLog.Info("Finished the processing...");
