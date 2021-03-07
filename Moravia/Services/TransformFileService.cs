@@ -13,6 +13,8 @@ namespace Moravia.Services
 		private static readonly string[] _SupportedToExtensions = new string[] { "xml", "json" };
 
 		private const string _RootXmlelemnt = "Document";
+		private const string _TitleElement = "title";
+		private const string _TextElement = "text";
 
 		private static readonly ILog fLog = LogManager.GetLogger(typeof(FileSystemService));
 
@@ -41,8 +43,8 @@ namespace Moravia.Services
 			XDocument xdoc = XDocument.Parse(source); //should check this is really xml DEBUG - Not only XML
 			DocumentDto doc = new DocumentDto
 			{
-				Title = xdoc.Root.Element("title").Value, // check  when it not exists
-				Text = xdoc.Root.Element("text").Value
+				Title = xdoc.Root.Element(_TitleElement).Value, // check  when it not exists
+				Text = xdoc.Root.Element(_TextElement).Value
 			};
 
 			return JsonConvert.SerializeObject(doc);
@@ -65,9 +67,9 @@ namespace Moravia.Services
 		{
 			switch (typeOfTransformation)
 			{
-				case "xmljson":
+				case ".xml.json":
 					return FromXmlToJson(source);
-				case "jsonxml":
+				case ".json.xml":
 					return FromJsonToXml(source);
 				default:
 					fLog.Warn($"This tanformation is not implemented: {typeOfTransformation}");

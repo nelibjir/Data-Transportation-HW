@@ -13,9 +13,9 @@ namespace Moravia.Test.Services
 		{
 			IIoService ioService = new FileSystemService();
 
-			Assume.That(!String.IsNullOrEmpty(FileUtil.ReadFile(Settings.GetSourceFilePath())));
+			Assume.That(!String.IsNullOrEmpty(FileUtil.ReadFileAsync(Settings.GetSourceFilePath()).Result));
 
-			Assert.IsNotNull(ioService.ReadFromSource());
+			Assert.IsNotNull(ioService.ReadFromSourceAsync());
 		}
 	}
 }

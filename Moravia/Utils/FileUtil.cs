@@ -1,6 +1,7 @@
 ﻿using log4net;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Moravia.Utils
 {
@@ -8,14 +9,14 @@ namespace Moravia.Utils
 	{
 		private static readonly ILog fLog = LogManager.GetLogger(typeof(FileUtil));
 
-		public static string ReadFile(string sourceFileName)
+		public static async Task<string> ReadFileAsync(string sourceFileName)
 		{
 			try
 			{
 				using FileStream sourceStream = File.Open(sourceFileName, FileMode.Open);
 				using (StreamReader reader = new StreamReader(sourceStream))
 				{
-					return reader.ReadToEnd();
+					return await reader.ReadToEndAsync();
 				}
 			}
 			catch (FileNotFoundException ex) 

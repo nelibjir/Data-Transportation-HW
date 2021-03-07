@@ -1,7 +1,7 @@
-﻿using log4net;
-using Moravia.Utils;
+﻿using Moravia.Utils;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Moravia.Services
 {
@@ -14,7 +14,7 @@ namespace Moravia.Services
 
 		public string GetSourceDocumentType() => Path.GetExtension(fSourceFileName);
 
-		public string ReadFromSource() => FileUtil.ReadFile(fSourceFileName);
+		public async Task<string> ReadFromSourceAsync() => await FileUtil.ReadFileAsync(fSourceFileName);
 
 		public void SaveToDestination(string serializedDoc)
 		{

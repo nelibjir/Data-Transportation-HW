@@ -1,5 +1,9 @@
 ﻿using log4net;
+using log4net.Config;
 using Moravia.Services;
+using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Moravia
 {
@@ -8,8 +12,12 @@ namespace Moravia
 
 		private static readonly ILog fLog = LogManager.GetLogger(typeof(Program));
 
-		public static void Main(string[] args)
+		//TODO make write async also - not such usable in this case
+		public async static Task Main(string[] args)
 		{
+			var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+			XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
+
 			fLog.Info("Started to process the data...");
 
 			IIoService ioService;
@@ -19,13 +27,14 @@ namespace Moravia
 			else
 				ioService = new FileSystemService();
 
-			string input = ioService.ReadFromSource();
+			string input = await ioService.ReadFromSourceAsync();
+			fLog.Info($"Input file : {input}");
 
 			transformationService = new TransformFileService();
 			string output = transformationService.Transform(ioService.GetSourceDocumentType(), ioService.GetDestinationDocumentType(), input);
 
 			ioService.SaveToDestination(output);
-			fLog.Info("Finished the processing...");
+			fLog.Info($"Finished the processing with: {output}...");
 		}
 	}
 }
