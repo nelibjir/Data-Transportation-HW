@@ -6,6 +6,7 @@ namespace Moravia.Services
 {
 	public class ApiService : IIoService
 	{
+		//TODO IoC here? 
 		private static readonly HttpClient client = new HttpClient();
 
 		public string GetDestinationDocumentType() => throw new System.NotImplementedException();
@@ -17,9 +18,7 @@ namespace Moravia.Services
 				new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
 			client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
 
-			var stringTask = client.GetStringAsync("https://api.github.com/orgs/dotnet/repos");
-
-			return await stringTask;
+			return await client.GetStringAsync("https://api.github.com/orgs/dotnet/repos");
 		}
 		public void SaveToDestination(string serializedDoc) => throw new System.NotImplementedException();
 	}

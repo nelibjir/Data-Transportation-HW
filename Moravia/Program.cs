@@ -12,7 +12,6 @@ namespace Moravia
 
 		private static readonly ILog fLog = LogManager.GetLogger(typeof(Program));
 
-		//TODO make write async also - not such usable in this case
 		public async static Task Main(string[] args)
 		{
 			var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
@@ -33,7 +32,7 @@ namespace Moravia
 			transformationService = new TransformFileService();
 			string output = transformationService.Transform(ioService.GetSourceDocumentType(), ioService.GetDestinationDocumentType(), input);
 
-			ioService.SaveToDestination(output);
+			ioService.SaveToDestination(output); //TODO make write async also - not such usable in this case
 			fLog.Info($"Finished the processing with: {output}...");
 		}
 	}
