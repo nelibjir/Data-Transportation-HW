@@ -1,5 +1,7 @@
 ﻿using Moravia.Services;
 using NUnit.Framework;
+using System.Xml.Linq;
+
 namespace Moravia.Test.Services
 {
 	[TestFixture]
@@ -9,9 +11,11 @@ namespace Moravia.Test.Services
 		[Test]
 		public void TransformFileXmlJsonTest()
 		{
-			string from = "xml";
-			string to = "json";
-			string source = "<document>\r\n<title>Titulek</title>\r\n<text>Tohle je testovaci text v cestine!</text>\r\n</document>";
+			string from = ".xml";
+			string to = ".json";
+
+			XElement xml = new XElement("Document", new XElement("Title", "Titulek"), new XElement("Text", "Tohle je testovaci text v cestine!"));
+			string source = xml.ToString();
 
 			TransformFileService transformFileService = new TransformFileService();
 
@@ -21,13 +25,13 @@ namespace Moravia.Test.Services
 		[Test]
 		public void TranformFileJsonXmlTest()
 		{
-			string to = "xml";
-			string from = "json";
+			string to = ".xml";
+			string from = ".json";
 			string source = "{\"Title\":\"Titulek\",\"Text\":\"Tohle je testovaci text v cestine!\"}";
 
 			TransformFileService transformFileService = new TransformFileService();
 
-			Assert.AreEqual("<document>\r\n<title>Titulek</title>\r\n<text>Tohle je testovaci text v cestine!</text>\r\n</document>", transformFileService.Transform(from, to, source));
+			Assert.AreEqual("<Document>\r\n  <Title>Titulek</Title>\r\n  <Text>Tohle je testovaci text v cestine!</Text>\r\n</Document>", transformFileService.Transform(from, to, source));
 		}
 	}
 }

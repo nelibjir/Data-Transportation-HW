@@ -14,8 +14,8 @@ namespace Moravia.Services
 		private static readonly string[] _SupportedToExtensions = new string[] { "xml", "json" };
 
 		private const string _RootXmlelemnt = "Document";
-		private const string _TitleElement = "title";
-		private const string _TextElement = "text";
+		private const string _TitleElement = "Title";
+		private const string _TextElement = "Text";
 
 		private static readonly ILog fLog = LogManager.GetLogger(typeof(FileSystemService));
 
@@ -95,7 +95,7 @@ namespace Moravia.Services
 		{
 			//FIXME should later check also mandatory XML documents
 			XmlDocument document = new XmlDocument();
-			document.Load(source);
+			document.LoadXml(source);
 		}
 	}
 }
