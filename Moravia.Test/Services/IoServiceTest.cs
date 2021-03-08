@@ -9,7 +9,7 @@ namespace Moravia.Test.Services
 	public class IoServiceTest
 	{
 		[Test]
-		public void ReadSystemIOTest()
+		public void ReadFileSystemIOTest()
 		{
 			IIoService ioService = new FileSystemService();
 

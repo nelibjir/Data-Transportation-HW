@@ -1,6 +1,7 @@
 ﻿using log4net;
 using log4net.Config;
 using log4net.Repository;
+using Moravia.Factories;
 using Moravia.Services;
 using System.IO;
 using System.Reflection;
@@ -22,18 +23,16 @@ namespace Moravia
 
 			fLog.Info("Started to process the data...");
 
-			IIoService ioService;
-			ITransformationService transformationService;
-			if (Settings.IsRemote())
-				ioService = new ApiService();
-			else
-				ioService = new FileSystemService();
+			IoFactory factory = new IoFactory();
+			IIoService ioService = factory.GetIoService(true);	
 
 			string input = await ioService.ReadFromSourceAsync();
 			fLog.Info($"Input file : {input}");
 
-			transformationService = new TransformFileService();
+			ITransformationService transformationService = new TransformFileService();
 			string output = transformationService.Transform(ioService.GetSourceDocumentType(), ioService.GetDestinationDocumentType(), input);
+
+			ioService = factory.GetIoService(false);
 
 			await ioService.SaveToDestinationAsync(output, cts.Token); //TODO make write async also - not such usable in this case
 			fLog.Info($"Finished the processing with: {output}...");

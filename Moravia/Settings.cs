@@ -9,8 +9,9 @@ namespace Moravia
         private const string _DestinationFileNameElemente = "DestinationFile";
         private const string _SettingFileName = "appsettings.json";
         private const string _SourceFileNameElement = "SourceFile";
-        private const string _IsRemoteElement = "Remote";
-        private const string _UrlPathElement = "Remote";
+        private const string _IsRemoteSourceElement = "RemoteSource";
+        private const string _IsRemoteTargetElement = "RemoteTarget";
+        private const string _UrlPathElement = "URL";
 
         private static IConfigurationRoot fBuilder;
 
@@ -33,11 +34,18 @@ namespace Moravia
             return fBuilder.GetSection(_UrlPathElement).Value;
         }
 
-        public static bool IsRemote()
+        public static bool IsRemoteSource()
         {
             if (fBuilder == null)
                 createBuilder();
-            return bool.Parse(fBuilder.GetSection(_IsRemoteElement).Value);
+            return bool.Parse(fBuilder.GetSection(_IsRemoteSourceElement).Value);
+        }
+
+        public static bool IsRemoteTarget()
+        {
+            if (fBuilder == null)
+                createBuilder();
+            return bool.Parse(fBuilder.GetSection(_IsRemoteTargetElement).Value);
         }
 
         private static void createBuilder()
