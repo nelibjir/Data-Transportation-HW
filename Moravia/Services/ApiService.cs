@@ -18,6 +18,8 @@ namespace Moravia.Services
 
 		public async Task<string> ReadFromSourceAsync()
 		{
+			throw new NotImplementedException(); //can't be used yet
+
 			fClient.DefaultRequestHeaders.Accept.Clear();
 			fClient.DefaultRequestHeaders.Accept.Add(
 				new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
@@ -30,6 +32,8 @@ namespace Moravia.Services
 		{
 			if (String.IsNullOrEmpty(serializedDoc))
 				throw new ArgumentException($"{serializedDoc} is empty or null!");
+
+			throw new NotImplementedException(); //can't be used yet
 
 			string url = Settings.GetUrlPath();
 			HttpResponseMessage response = await fClient.
