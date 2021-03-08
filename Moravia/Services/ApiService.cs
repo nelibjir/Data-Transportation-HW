@@ -1,25 +1,42 @@
-﻿using System.Net.Http;
+﻿using log4net;
+using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Moravia.Services
 {
 	public class ApiService : IIoService
 	{
-		//TODO IoC here? 
-		private static readonly HttpClient client = new HttpClient();
+		private static HttpClient fClient = new HttpClient();
+		private static readonly ILog fLog = LogManager.GetLogger(typeof(ApiService));
 
-		public string GetDestinationDocumentType() => throw new System.NotImplementedException();
-		public string GetSourceDocumentType() => throw new System.NotImplementedException();
+		public string GetDestinationDocumentType() => throw new NotImplementedException();
+		public string GetSourceDocumentType() => throw new NotImplementedException();
+
 		public async Task<string> ReadFromSourceAsync()
 		{
-			client.DefaultRequestHeaders.Accept.Clear();
-			client.DefaultRequestHeaders.Accept.Add(
+			fClient.DefaultRequestHeaders.Accept.Clear();
+			fClient.DefaultRequestHeaders.Accept.Add(
 				new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
-			client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
+			fClient.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
 
-			return await client.GetStringAsync("https://api.github.com/orgs/dotnet/repos");
+			// to test this I would need to find API, found Google api, but need to generate token yet
+			return await fClient.GetStringAsync(Settings.GetUrlPath());
 		}
-		public void SaveToDestination(string serializedDoc) => throw new System.NotImplementedException();
+		public async Task SaveToDestinationAsync(string serializedDoc, CancellationToken cancellationToken)
+		{
+			if (String.IsNullOrEmpty(serializedDoc))
+				throw new ArgumentException($"{serializedDoc} is empty or null!");
+
+			string url = Settings.GetUrlPath();
+			HttpResponseMessage response = await fClient.
+				PostAsync(url, new StringContent(serializedDoc, Encoding.UTF8, "application/json"), cancellationToken);
+
+			if (response != null)
+				fLog.Info($"Response from the URL {url} is: {response}");
+		}
 	}
 }

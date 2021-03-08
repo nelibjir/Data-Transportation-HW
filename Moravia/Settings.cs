@@ -4,34 +4,47 @@ using System.IO;
 
 namespace Moravia
 {
-    // TODO add here the literals to constants
 	public class Settings
 	{
+        private const string _DestinationFileNameElemente = "DestinationFile";
+        private const string _SettingFileName = "appsettings.json";
+        private const string _SourceFileNameElement = "SourceFile";
+        private const string _IsRemoteElement = "Remote";
+        private const string _UrlPathElement = "Remote";
+
         private static IConfigurationRoot fBuilder;
+
         public static string GetSourceFilePath() {
             if (fBuilder == null)
                 createBuilder();
-            return fBuilder.GetSection("SourceFile").Value;
+            return fBuilder.GetSection(_SourceFileNameElement).Value;
         }
 
         public static string GetDestinationFilePath() {
             if (fBuilder == null)
                 createBuilder();
-            return fBuilder.GetSection("DestinationFile").Value;
+            return fBuilder.GetSection(_DestinationFileNameElemente).Value;
+        }
+
+        public static string GetUrlPath()
+        {
+            if (fBuilder == null)
+                createBuilder();
+            return fBuilder.GetSection(_UrlPathElement).Value;
         }
 
         public static bool IsRemote()
         {
             if (fBuilder == null)
                 createBuilder();
-            return bool.Parse(fBuilder.GetSection("Remote").Value);
+            return bool.Parse(fBuilder.GetSection(_IsRemoteElement).Value);
         }
 
         private static void createBuilder()
         {
             fBuilder = new ConfigurationBuilder()
                                 .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
-                                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                                .AddJsonFile(_SettingFileName, optional: false, reloadOnChange: true)
                                 .Build();
         }
     }

@@ -1,6 +1,7 @@
 ﻿using log4net;
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Moravia.Utils
@@ -31,14 +32,14 @@ namespace Moravia.Utils
 			}
 		}
 
-		public static void WriteFile(string targetFileName, string content)
+		public static async Task WriteFileAsync(string targetFileName, string content, CancellationToken cancellationToken)
 		{
 			try
 			{
 				using FileStream targetStream = File.Open(targetFileName, FileMode.Create, FileAccess.Write);
 				using (StreamWriter sw = new StreamWriter(targetStream))
 				{
-					sw.Write(content);
+					await sw.WriteAsync(content.AsMemory(), cancellationToken);
 				}
 			}
 			catch (UnauthorizedAccessException ex) 

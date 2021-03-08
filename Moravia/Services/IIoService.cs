@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Moravia.Services
 {
@@ -7,6 +8,6 @@ namespace Moravia.Services
 		string GetDestinationDocumentType();
 		string GetSourceDocumentType();
 		Task<string> ReadFromSourceAsync();
-		void SaveToDestination(string serializedDoc);
+		Task SaveToDestinationAsync(string serializedDoc, CancellationToken cancellationToken);
 	}
 }

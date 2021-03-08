@@ -1,8 +1,10 @@
 ﻿using log4net;
 using log4net.Config;
+using log4net.Repository;
 using Moravia.Services;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Moravia
@@ -14,8 +16,9 @@ namespace Moravia
 
 		public async static Task Main(string[] args)
 		{
-			var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+			ILoggerRepository logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
 			XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
+			CancellationTokenSource cts = new CancellationTokenSource();
 
 			fLog.Info("Started to process the data...");
 
@@ -32,7 +35,7 @@ namespace Moravia
 			transformationService = new TransformFileService();
 			string output = transformationService.Transform(ioService.GetSourceDocumentType(), ioService.GetDestinationDocumentType(), input);
 
-			ioService.SaveToDestination(output); //TODO make write async also - not such usable in this case
+			await ioService.SaveToDestinationAsync(output, cts.Token); //TODO make write async also - not such usable in this case
 			fLog.Info($"Finished the processing with: {output}...");
 		}
 	}

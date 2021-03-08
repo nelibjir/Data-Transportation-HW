@@ -1,6 +1,7 @@
 ﻿using Moravia.Utils;
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Moravia.Services
@@ -16,12 +17,12 @@ namespace Moravia.Services
 
 		public async Task<string> ReadFromSourceAsync() => await FileUtil.ReadFileAsync(fSourceFileName);
 
-		public void SaveToDestination(string serializedDoc)
+		public async Task SaveToDestinationAsync(string serializedDoc, CancellationToken cancellationToken)
 		{
 			if (String.IsNullOrEmpty(serializedDoc))
 				throw new ArgumentException($"{serializedDoc} is empty or null!");
 
-			FileUtil.WriteFile(fDestinationFileName, serializedDoc);
+			await FileUtil.WriteFileAsync(fDestinationFileName, serializedDoc, cancellationToken);
 		}
 	}
 }
