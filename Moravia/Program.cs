@@ -1,52 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using log4net;
+using log4net.Config;
+using log4net.Repository;
+using Moravia.Services;
 using System.IO;
-using System.Xml.Linq;
-using Newtonsoft.Json;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Moravia
 {
-    public class Document
-    {
-        public string Title { get; set; }
-        public string Text { get; set; }
-    }
+	public class Program
+	{
 
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            // TODO add this files here to some resources in app scope
-            // FIXME -> this should be in config file and not here, I mean the strings 
-            // TODO check also it exists! 
-            var sourceFileName = Path.Combine(Environment.CurrentDirectory, "..\\..\\..\\Source Files\\Document1.xml");
-            var targetFileName = Path.Combine(Environment.CurrentDirectory, "..\\..\\..\\Target Files\\Document1.json");
+		private static readonly ILog fLog = LogManager.GetLogger(typeof(Program));
 
-            //FIXME put the reader to using, so the stream would be dispatch, closed
-            try
-            {
-                FileStream sourceStream = File.Open(sourceFileName, FileMode.Open); // TODO reduce - this line is needless
-                var reader = new StreamReader(sourceStream);
-                string input = reader.ReadToEnd();
-            }
-            catch (Exception ex) // FIXME with exact Exceptions
-            {
-                throw new Exception(ex.Message); // FIXME on some exact exception, also we don't need to to throw it again maybe, this is now useless
-            }
+		public async static Task Main(string[] args)
+		{
+			ILoggerRepository logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+			XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
+			CancellationTokenSource cts = new CancellationTokenSource();
 
-            // TODO should check this is really xml
-            var xdoc = XDocument.Parse(input); //FIXME the input is not seen on scope, should be above catch
-            var doc = new Document
-            {
-                Title = xdoc.Root.Element("title").Value, /// TODO what if title is null?
-                Text = xdoc.Root.Element("text").Value // TODO what if text is null?
-            };
+			fLog.Info("Started to process the data...");
 
-            var serializedDoc = JsonConvert.SerializeObject(doc);
+			IIoService ioService;
+			ITransformationService transformationService;
+			if (Settings.IsRemote())
+				ioService = new ApiService();
+			else
+				ioService = new FileSystemService();
 
-            var targetStream = File.Open(targetFileName, FileMode.Create, FileAccess.Write);
-            var sw = new StreamWriter(targetStream); //FIXME again all of this in the using together
-            sw.Write(serializedDoc); // FIXME under catch also! 
-        }
-    }
+			string input = await ioService.ReadFromSourceAsync();
+			fLog.Info($"Input file : {input}");
+
+			transformationService = new TransformFileService();
+			string output = transformationService.Transform(ioService.GetSourceDocumentType(), ioService.GetDestinationDocumentType(), input);
+
+			await ioService.SaveToDestinationAsync(output, cts.Token); //TODO make write async also - not such usable in this case
+			fLog.Info($"Finished the processing with: {output}...");
+		}
+	}
 }
